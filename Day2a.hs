@@ -16,9 +16,9 @@ data PasswordSpec = PasswordSpec
 
 instance Read PasswordSpec where
   readsPrec _ = readP_to_S $ do
-    min <- munch1 isDigit
+    min <- read <$> munch1 isDigit
     char '-'
-    max <- munch1 isDigit
+    max <- read <$> munch1 isDigit
     skipSpaces
     letter <- get
     munch1 (not . isAlpha)
@@ -26,8 +26,8 @@ instance Read PasswordSpec where
     return
       PasswordSpec
         { letter = letter,
-          minimumTimes = read min :: Int,
-          maximumTimes = read max :: Int,
+          minimumTimes = min,
+          maximumTimes = max,
           password = password
         }
 
