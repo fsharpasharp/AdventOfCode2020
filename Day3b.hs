@@ -17,7 +17,7 @@ solve file = do
   f <- readFile file
   return $ product $ trees <$> slopes <*>  [map cycle . lines $ f]
 
-trees :: (Int, Int) -> [[Char]] -> Int
+trees :: (Int, Int) -> [String] -> Int
 trees (right, down) = length . filter (== '#') . trees' right
   where
     trees' n xss = case drop down xss of
