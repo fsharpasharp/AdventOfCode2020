@@ -5,11 +5,12 @@ module Day4b
 where
 
 import Control.Monad
-import Data.Maybe (isJust, fromJust)
+import Data.Maybe (fromJust, isJust)
 import Data.Void
-import Text.Read
 import Text.Megaparsec
 import Text.Megaparsec.Char
+import qualified Text.Megaparsec.Char.Lexer as L
+import Text.Read
 
 type Parser = Parsec Void String
 
@@ -27,49 +28,48 @@ pairP = do
   void newline <|> void space
   return (key, value)
 
+numParserWithLimit :: Int -> Int -> Parser ()
+numParserWithLimit min max = do
+  x <- L.decimal
+  guard (min <= x && x <= max)
 
-newtype Height = Height (Int, String) deriving Show
+hgtP :: Parser ()
+hgtP = do
+  x <- L.decimal
+  y <- string "cm" <|> string "in"
+  case y of
+    "cm" -> guard (150 <= x && x <= 193)
+    "in" -> guard (59 <= x && x <= 76)
 
-heightP :: Parser (Maybe Height)
-heightP = do
-  val <- some digitChar 
-  unit <- string "cm" <|> string "in"
-  return $ height (read val) unit
+pidP :: Parser ()
+pidP = void $ count 9 digitChar
 
-height :: Int -> String -> Maybe Height
-height x "in" 
-  | 59 <= x && x <= 76 = Just $ Height (x, "in")
-height x "cm"
-  | 150 <= x && x <= 193 = Just $ Height (x, "cm")
-height _ _ = Nothing
+ls :: [(String, Parser ())]
+ls =
+  [ ("byr", numParserWithLimit 1920 2002),
+    ("iyr", numParserWithLimit 2010 2020),
+    ("eyr", numParserWithLimit 2020 2030),
+    ("hgt", hgtP),
+    ("hcl", char '#' >> (void . count 6 $ alphaNumChar)),
+    ( "ecl",
+      void $
+        Text.Megaparsec.choice
+          [ string "amb",
+            string "blu",
+            string "brn",
+            string "gry",
+            string "grn",
+            string "hzl",
+            string "oth"
+          ]
+    ),
+    ("pid", void $ count 9 digitChar)
+  ]
 
+validPassport :: [(String, String)] -> Maybe [()]
+validPassport dic = mapM (\l -> lookup (fst l) dic >>= parseMaybe (snd l)) ls
 
-hclP :: Parser String
-hclP = do
-  char '#'
-  count 6 alphaNumChar
-
-pidP :: Parser String
-pidP = do
-  count 9 digitChar
-
-
-validPassport :: [(String,String)] -> Bool
-validPassport dic = isJust $ do
-  yearLimit "byr" 1920 2002
-  yearLimit "iyr" 2010 2020
-  yearLimit "eyr" 2020 2030
-  join $ lookup "hgt" dic >>= parseMaybe heightP
-  lookup "hcl" dic >>= parseMaybe hclP
-  ecl <- lookup "ecl" dic
-  guard (ecl `elem` validColors)
-  lookup "pid" dic >>= parseMaybe pidP
-  where yearLimit key min max = do
-          x <- lookup key dic >>= readMaybe :: Maybe Int
-          guard (min <= x && x <= max)
-          return x
-        validColors = ["amb", "blu", "brn", "gry", "grn", "hzl", "oth"]
-
+solve :: FilePath -> IO Int
 solve file = do
   f <- readFile file
-  return $ length . filter validPassport . fromJust . parseMaybe pairsP $ f
+  return $ length . filter isJust . map validPassport . fromJust . parseMaybe pairsP $ f
