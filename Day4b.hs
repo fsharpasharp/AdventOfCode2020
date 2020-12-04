@@ -67,7 +67,7 @@ ls =
   ]
 
 validPassport :: [(String, String)] -> Maybe [()]
-validPassport dic = mapM (\l -> lookup (fst l) dic >>= parseMaybe (snd l)) ls
+validPassport dic = mapM (\(key, p) -> lookup key dic >>= parseMaybe p) ls
 
 solve :: FilePath -> IO Int
 solve file = do
