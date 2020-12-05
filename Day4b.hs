@@ -1,16 +1,29 @@
 module Day4b
   ( solve,
-    pairP,
   )
 where
 
-import Control.Monad
+import Control.Monad ( guard, void )
 import Data.Maybe (fromJust, isJust)
-import Data.Void
+import Data.Void ( Void ) 
 import Text.Megaparsec
+    ( optional,
+      (<|>),
+      parseMaybe,
+      satisfy,
+      choice,
+      count,
+      some,
+      Parsec )
 import Text.Megaparsec.Char
+    ( alphaNumChar,
+      char,
+      digitChar,
+      letterChar,
+      newline,
+      space,
+      string )
 import qualified Text.Megaparsec.Char.Lexer as L
-import Text.Read
 
 type Parser = Parsec Void String
 
@@ -40,9 +53,6 @@ hgtP = do
   case y of
     "cm" -> guard (150 <= x && x <= 193)
     "in" -> guard (59 <= x && x <= 76)
-
-pidP :: Parser ()
-pidP = void $ count 9 digitChar
 
 ls :: [(String, Parser ())]
 ls =

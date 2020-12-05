@@ -4,12 +4,12 @@ module Day4a
   )
 where
 
-import Control.Monad
+import Control.Monad ( void )
 import Data.Maybe (fromJust, isJust)
-import Data.Void
+import Data.Void ( Void )
 import Text.Megaparsec
-import Text.Megaparsec.Char
-import Text.Read
+    ( optional, (<|>), parseMaybe, satisfy, some, Parsec )
+import Text.Megaparsec.Char ( char, letterChar, newline, space )
 
 type Parser = Parsec Void String
 
