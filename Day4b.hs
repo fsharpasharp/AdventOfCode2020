@@ -41,26 +41,28 @@ pairP = do
   void newline <|> void space
   return (key, value)
 
-numParserWithLimit :: Int -> Int -> Parser ()
+numParserWithLimit :: Int -> Int -> Parser Int
 numParserWithLimit min max = do
   x <- L.decimal
   guard (min <= x && x <= max)
+  return x
 
-hgtP :: Parser ()
+hgtP :: Parser (Int, String)
 hgtP = do
   x <- L.decimal
   y <- string "cm" <|> string "in"
   case y of
     "cm" -> guard (150 <= x && x <= 193)
     "in" -> guard (59 <= x && x <= 76)
+  return (x,y)
 
 ls :: [(String, Parser ())]
 ls =
-  [ ("byr", numParserWithLimit 1920 2002),
-    ("iyr", numParserWithLimit 2010 2020),
-    ("eyr", numParserWithLimit 2020 2030),
-    ("hgt", hgtP),
-    ("hcl", char '#' >> (void . count 6 $ alphaNumChar)),
+  [ ("byr", void $ numParserWithLimit 1920 2002),
+    ("iyr", void $ numParserWithLimit 2010 2020),
+    ("eyr", void $ numParserWithLimit 2020 2030),
+    ("hgt", void hgtP),
+    ("hcl", void $ char '#' >> count 6 alphaNumChar),
     ( "ecl",
       void $
         Text.Megaparsec.choice
