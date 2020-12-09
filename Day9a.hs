@@ -12,7 +12,7 @@ solve file = do
 
 groupLines :: [b] -> [([b], b)]
 groupLines [] = []
-groupLines lines@(_ : xs) = (preamble, lines !! 26) : groupLines xs
+groupLines lines@(_ : xs) = (preamble, lines !! 25) : groupLines xs
   where
     preamble = take 25 lines
 
