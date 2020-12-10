@@ -3,7 +3,7 @@ module Day10b
   )
 where
 
-import Data.Array
+import Data.Array ( (!), (//), listArray, Array )
 import Data.List (sort)
 
 solve :: FilePath -> IO Int
@@ -18,6 +18,7 @@ solve' xs = dp sorted (listArray (-2, upper) (0:0:1 : replicate upper 0))
     upper = maximum sorted - 1
 
 dp :: [Int] -> Array Int Int -> Int
-dp [x] ar = sum $ (ar !) <$> [x-3, x-2, x-1]
-dp (x:xs) ar = dp xs (ar // [(x, prevSum)])
+dp (x:xs) ar = case xs of
+  [] -> prevSum
+  _ -> dp xs (ar // [(x, prevSum)])
   where prevSum = sum $ (ar !) <$> [x-3, x-2, x-1]
