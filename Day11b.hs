@@ -1,4 +1,4 @@
-module Day11bfix
+module Day11b
   ( solve,
   )
 where
