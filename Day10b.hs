@@ -14,8 +14,8 @@ solve file = do
 solve' :: [Int] -> Int
 solve' xs = dp sorted (listArray (-2, upper) (0:0:1 : replicate upper 0))
   where
-    sorted = sort xs
-    upper = maximum sorted - 1
+    sorted = 0:sort xs
+    upper = maximum xs - 1
 
 dp :: [Int] -> Array Int Int -> Int
 dp (x:xs) ar = case xs of
