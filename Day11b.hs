@@ -29,7 +29,7 @@ surrounding mat pos = concatMap seenChair . fmap (vision pos) $ directions
           Just x -> [xs !! x]
 
 
-vision :: (Int, Int) -> (Int, Int) -> [(Int, Int)]
+vision :: Pos -> (Int, Int) -> [Pos]
 vision (yStart,xStart) (yDir,xDir) = takeWhile validValues [(yStart+yDir*i,xStart+xDir*i) | i <- [1..]]
   where validValues (y,x) = 0 <= x && x < columns &&
                             0 <= y && y < rows
