@@ -25,14 +25,15 @@ type Parser = Parsec Void String
 instructionP :: Parser Instruction
 instructionP = do
   name <- letterChar
-  case name of
-    'E' -> Direction East <$> L.decimal
-    'N' -> Direction North <$> L.decimal
-    'W' -> Direction West <$> L.decimal
-    'S' -> Direction South <$> L.decimal
-    'L' -> Left <$> L.decimal
-    'R' -> Left . negate <$> L.decimal
-    'F' -> Forward <$> L.decimal
+  let instruction = case name of
+        'E' -> Direction East
+        'N' -> Direction North
+        'W' -> Direction West
+        'S' -> Direction South
+        'L' -> Left
+        'R' -> Left . negate
+        'F' -> Forward
+  instruction <$> L.decimal
 
 update :: LocationDirection -> Instruction -> LocationDirection
 update loc@(LocationDirection _ (x, y)) (Direction East val) = loc {position = (x + val, y)}
