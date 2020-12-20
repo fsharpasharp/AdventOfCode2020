@@ -2,7 +2,6 @@ module Day19 where
 
 import qualified Control.Applicative as Applicative
 import Control.Monad (void)
-import Data.Foldable (traverse_)
 import Data.Map (Map, (!))
 import qualified Data.Map as Map
 import Data.Maybe (isJust, listToMaybe)
@@ -75,12 +74,11 @@ createParser map = createParser' map (map ! 0) <* ReadP.eof
     createParser' m (Dep xs) = mconcat <$> traverse (createParser' m . (m !)) xs
     createParser' m (Or a b) = createParser' m a Applicative.<|> createParser' m b
 
-solve :: FilePath -> IO [String]
+solve :: FilePath -> IO Int
 solve fp = do
   f <- readFile fp
   let Just (rules, words) = parseMaybe inputP f
-  let map = populateMap rules
-  let parser = createParser map
-  return $ filter (isParseable parser) words
+  let parser = createParser . populateMap $ rules
+  return $ length . filter (isParseable parser) $ words
   where
     isParseable parser = isJust . listToMaybe . ReadP.readP_to_S parser
