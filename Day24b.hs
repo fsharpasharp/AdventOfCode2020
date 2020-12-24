@@ -55,9 +55,7 @@ position "w" = mempty {east = -1}
 position x = error "Not supported"
 
 canonical :: Position -> Position
-canonical (Position n ne se)
-  | ne <= 0 && se <= 0 || ne >= 0 && se >= 0 = Position (n + se) (ne - se) 0
-  | otherwise = Position (n + se) (ne - se) 0
+canonical (Position n ne se) = Position (n + se) (ne - se) 0 
 
 lineP = do
   x <- mconcat <$> some positionP
