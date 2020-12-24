@@ -1,6 +1,6 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 
-module Day24b where
+module Day24 where
 
 import Control.Monad (void)
 import Data.Map.Strict (Map, (!))
@@ -21,16 +21,15 @@ type Parser = Parsec Void String
 
 data Position = Position
   { east :: Int,
-    northEast :: Int,
-    southEast :: Int
+    northEast :: Int
   }
   deriving (Show, Ord, Eq)
 
 instance Semigroup Position where
-  Position x1 x2 x3 <> Position y1 y2 y3 = Position (x1 + y1) (x2 + y2) (x3 + y3)
+  Position x1 x2 <> Position y1 y2 = Position (x1 + y1) (x2 + y2) 
 
 instance Monoid Position where
-  mempty = Position 0 0 0
+  mempty = Position 0 0 
 
 positionP :: Parser Position
 positionP = do
@@ -46,27 +45,25 @@ positionP = do
   return $ position x
 
 position :: String -> Position
-position "se" = mempty {southEast = 1}
+position "se" = mempty {east = 1, northEast = -1}
 position "sw" = mempty {northEast = -1}
-position "nw" = mempty {southEast = -1}
+position "nw" = mempty {east = -1, northEast = 1}
 position "ne" = mempty {northEast = 1}
 position "e" = mempty {east = 1}
 position "w" = mempty {east = -1}
 position x = error "Not supported"
 
-canonical :: Position -> Position
-canonical (Position n ne se) = Position (n + se) (ne - se) 0 
-
 lineP = do
   x <- mconcat <$> some positionP
   optional newline
-  return $ canonical x
+  return x
 
 solve fp = do
   f <- readFile fp
   let (Just positions) = parseMaybe (some lineP <* eof) f
   let initial = Map.filter (== 1) . solve' $ positions
-  return . Map.size $ iterate' step initial  !! 100 
+  print . Map.size $ initial
+  print . Map.size $ iterate' step initial  !! 100 
 
 step :: Map Position Int -> Map Position Int
 step xs = oneNeighborBlack <> guaranteed
@@ -81,7 +78,7 @@ intermediateStep = Map.unionsWith (+) . fmap (\x -> Map.insert x 1 Map.empty) . 
   where
     addSurrounding :: Position -> [Position]
     addSurrounding pos =
-      canonical . (pos <>)
+       (pos <>)
         <$> [ position "se",
               position "sw",
               position "nw",
