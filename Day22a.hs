@@ -1,6 +1,6 @@
 {-# LANGUAGE PartialTypeSignatures #-}
 
-module Day22 where
+module Day22a where
 
 import Control.Monad (void)
 import Data.Bifunctor (Bifunctor (second))

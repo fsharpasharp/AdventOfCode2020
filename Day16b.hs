@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Day16a where
+module Day16b where
 
 
 import Data.Map (Map)
